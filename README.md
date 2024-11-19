@@ -20,3 +20,5 @@ DB_PORT=3306
 DB_DATABASE=ecommercevue
 DB_USERNAME=root
 DB_PASSWORD=
+
+Para este proyecto se van a usar productos de prueba los cuales crea laravel por defecto
