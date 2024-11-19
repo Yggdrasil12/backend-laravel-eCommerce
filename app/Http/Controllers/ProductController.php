@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -36,9 +37,17 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Product $product)
+    public function show(int $id)
     {
-        //
+        $consult = Product::with('images')->where("id", $id)->first();
+
+        if ($consult && $consult->images->isNotEmpty()) {
+            $url = $consult->images[0]->image_url; // Obtén la primera URL
+            $consult->setAttribute('image_url', $url); // Agrega un atributo temporal al modelo
+            $consult->unsetRelation('images'); // Elimina la relación `images` de la respuesta
+        }
+
+        return $consult; // Retorna el producto con la URL como atributo adicional
     }
 
     /**

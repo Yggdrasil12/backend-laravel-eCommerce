@@ -1,7 +1,7 @@
 composer install
 php artisan migrate
 php artisan db:seed
-
+php artisan db:seed --class=ImageSeeder
 Variables de entorno para probar en local
 APP_NAME=Laravel
 APP_ENV=local
