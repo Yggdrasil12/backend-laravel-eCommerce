@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
@@ -43,17 +44,38 @@ class ProductController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Product $product)
+    public function edit(int $id)
     {
-        //
+        return Product::where("id", $id)->first();
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateProductRequest $request, Product $product)
+    public function update(Request $request, int $id)
     {
-        //
+        // return $request;
+        $product = Product::find($id);
+
+        // Verificar si el producto existe
+        if (!$product) {
+            return response()->json(['error' => 'Producto no encontrado'], 404);
+        }
+
+        // Validar los datos de la solicitud (opcional, pero recomendado)
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'description' => 'nullable|string|max:500',
+            // Agrega más reglas según los campos que necesites actualizar
+        ]);
+
+         // Actualizar los campos del producto
+        $product->update($validatedData);
+
+        // Devolver el producto actualizado como respuesta
+        return response()->json(['message' => 'Producto actualizado correctamente', 'product' => $product], 200);
+
     }
 
     /**

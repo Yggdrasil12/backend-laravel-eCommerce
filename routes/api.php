@@ -14,3 +14,5 @@ Route::resource('products', ProductController::class);
 
 Route::post('register', [UserController::class,'register']);
 Route::post('login', [UserController::class,'login']);
+
+// Route::get('/product/{id}', [ProductController::class,'edit']);
