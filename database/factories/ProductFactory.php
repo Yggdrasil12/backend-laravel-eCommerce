@@ -22,7 +22,7 @@ class ProductFactory extends Factory
     {
         return [
             'name' => $this->faker->word, // Genera una palabra aleatoria como nombre
-            'price' => $this->faker->randomFloat(0, 1000, 10000), // Genera un precio aleatorio entre 1 y 100 con 2 decimales
+            'quantity' => $this->faker->randomFloat(0, 1, 100), // Genera un precio aleatorio entre 1 y 100 con 2 decimales
             'description' => $this->faker->sentence, // Genera una frase aleatoria como descripción
         ];
     }
