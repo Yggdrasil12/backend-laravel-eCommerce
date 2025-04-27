@@ -23,5 +23,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call(ProductSeeder::class); // Agrega aquí tu seeder
+        // Seeder de imagenes
+        // $this->call(ImageSeeder::class); // Agrega aquí tu seeder
     }
 }
