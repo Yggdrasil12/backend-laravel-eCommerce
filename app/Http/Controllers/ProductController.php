@@ -4,9 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Http\Requests\StoreProductRequest;
-use App\Http\Requests\UpdateProductRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
@@ -39,15 +38,14 @@ class ProductController extends Controller
      */
     public function show(int $id)
     {
-        $consult = Product::with('images')->where("id", $id)->first();
+        $product = Product::find($id);
 
-        if ($consult && $consult->images->isNotEmpty()) {
-            $url = $consult->images[0]->image_url; // Obtén la primera URL
-            $consult->setAttribute('image_url', $url); // Agrega un atributo temporal al modelo
-            $consult->unsetRelation('images'); // Elimina la relación `images` de la respuesta
+        // Verificar si el producto existe
+        if (!$product) {
+            return response()->json(['error' => 'Producto no encontrado'], 404);
         }
 
-        return $consult; // Retorna el producto con la URL como atributo adicional
+        return $product;
     }
 
     /**
@@ -61,9 +59,9 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, int $id)
+    public function update(Request $request, $id)
     {
-        // return $request;
+        // Buscar el producto por ID
         $product = Product::find($id);
 
         // Verificar si el producto existe
@@ -71,20 +69,43 @@ class ProductController extends Controller
             return response()->json(['error' => 'Producto no encontrado'], 404);
         }
 
-        // Validar los datos de la solicitud (opcional, pero recomendado)
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'price' => 'required|numeric|min:0',
-            'description' => 'nullable|string|max:500',
-            // Agrega más reglas según los campos que necesites actualizar
-        ]);
+        try {
+            $rules = [
+                'name' => 'required|string|max:255',
+                'quantity' => 'required|numeric|min:0',
+                'description' => 'nullable|string|max:500',
+            ];
 
-         // Actualizar los campos del producto
-        $product->update($validatedData);
+            $validator = Validator::make($request->all(), $rules);
 
-        // Devolver el producto actualizado como respuesta
-        return response()->json(['message' => 'Producto actualizado correctamente', 'product' => $product], 200);
+            if ($validator->fails()) {
 
+                $errors = $validator->errors()->all();
+                return response()->json($errors, 400);
+            }
+
+            // Continuar con la lógica de actualización si la validación es exitosa
+            $validatedData = $validator->validated();
+
+            // Actualizar los campos del producto
+            $product->name = $validatedData['name'];
+            $product->quantity = $validatedData['quantity'];
+            $product->description = $validatedData['description'];
+
+            $product->save();
+
+            // Devolver el producto actualizado como respuesta
+            return response()->json([
+                'message' => 'Producto actualizado correctamente',
+                'product' => $product
+            ], 200);
+
+        } catch (\Exception $e) {
+            // Manejo de errores con detalles
+            return response()->json([
+                'message' => 'No se pudo actualizar el producto: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

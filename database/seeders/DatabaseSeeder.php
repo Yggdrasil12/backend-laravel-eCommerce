@@ -21,9 +21,15 @@ class DatabaseSeeder extends Seeder
             'phone' => 123456,
             'address' => 'calle 12 '
         ]);
+        User::factory()->create([
+            'name' => 'Delete',
+            'email' => 'delete@gmail.com',
+            'password' => '123456789',
+            'role' => 'admin',
+            'phone' => 123456,
+            'address' => 'calle 11 '
+        ]);
 
         $this->call(ProductSeeder::class); // Agrega aquí tu seeder
-        // Seeder de imagenes
-        // $this->call(ImageSeeder::class); // Agrega aquí tu seeder
     }
 }

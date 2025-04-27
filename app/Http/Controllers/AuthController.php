@@ -50,7 +50,9 @@ class AuthController extends Controller
             ]);
 
             // Buscar al usuario por su correo electrónico
-            $user = User::where('email', $request->email)->first();
+            $user = User::where('email', $request->email)
+            ->where('state',1)
+            ->first();
 
             // Verificar si el usuario existe y si la contraseña es correcta
             if ($user && Hash::check($request->password, $user->password)) {
@@ -65,7 +67,7 @@ class AuthController extends Controller
 
             // Si las credenciales son incorrectas
             return response()->json([
-                'message' => 'Las credenciales proporcionadas son incorrectas.',
+                'message' => 'Las credenciales proporcionadas son incorrectas, o el usuario se encuentra inactivo',
             ], 401); // Código de estado 401 Unauthorized
 
         } catch (\Exception $e) {

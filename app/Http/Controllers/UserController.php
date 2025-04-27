@@ -61,7 +61,10 @@ class UserController extends Controller
     public function update(Request $request, string $email)
     {
 
-        $user = User::where('email',$email)->first();
+        $user = User::where('email',$email)
+        ->where('state',1)
+        ->first();
+
         if (!$user){
             return response()->json([
                 'message' => 'No se encontro el usuario especificado'
@@ -124,8 +127,28 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $email)
     {
-        //
+        try{
+
+            $user = User::where('email',$email)->first();
+            if (!$user){
+                return response()->json([
+                    'message' => 'No se encontro el usuario especificado'
+                ],404);
+            }
+
+            $user->state = 0;
+            $user->save();
+            // Devolver una respuesta exitosa
+            return response()->json([
+                'message' => 'Usuario actualizado correctamente',
+                'user' => $user
+            ], 200);
+        }catch(\Exception $e){
+            return response()->json([
+                'message' => 'no se pudo eliminar el usuario: ' . $e->getMessage(),
+            ],500);
+        }
     }
 }
