@@ -30,7 +30,25 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request)
     {
-        //
+        try {
+        $validatedData = $request->validated();
+
+        $product = Product::create([
+            'name' => $validatedData['name'],
+            'quantity' => $validatedData['quantity'],
+            'description' => $validatedData['description'] ?? null,
+        ]);
+
+        return response()->json([
+            'message' => 'Producto creado correctamente',
+            'product' => $product
+        ], 201);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'No se pudo crear el producto: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -111,8 +129,14 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Product $product)
-    {
-        //
+    public function destroy($id)
+{
+        $product = Product::find($id);
+        if (!$product) {
+            return response()->json(['message' => 'Producto no encontrado'], 404);
+        }
+
+        $product->delete();
+        return response()->json(['message' => 'Producto eliminado correctamente'], 200);
     }
 }

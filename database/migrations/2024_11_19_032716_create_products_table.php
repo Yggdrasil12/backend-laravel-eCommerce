@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->integer('quantity');
             $table->string('description');
+           $table->tinyInteger('state')->default(1);
             $table->timestamps();
         });
     }
